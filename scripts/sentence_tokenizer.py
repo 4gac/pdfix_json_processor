@@ -1,35 +1,33 @@
 import sys
-from nltk.tokenize import sent_tokenize
-import nltk.data
+import spacy
 
-tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
 
-file_source = sys.argv[1]
-with open(file_source, "r+") as f:
-    source_data = f.read()
-    # tokens = sent_tokenize(source_data)
-    tokens = tokenizer.tokenize(source_data)
-    # pysbd sentence tokenizer
-    #seg = pysbd.Segmenter(language="en", clean=False)
-    #tokens = seg.segment(source_data)
-    f.seek(0)
-    f.write(
-        "\n". join(tokens)
-    )
-    f.truncate()
+# slovak file
+file_target = sys.argv[1]
+with open(file_target, "r+") as ft:
+    target_text = ft.read()
 
-tokenizer2 = nltk.data.load("tokenizers/punkt/polish.pickle")
+    nlp_sk = spacy.load('xx_sent_ud_sm')
 
-file_target = sys.argv[2]
-with open(file_target, "r+") as f:
-    target_data = f.read()
-    # tokens = sent_tokenize(target_data)
-    tokens = tokenizer2.tokenize(target_data)
-    # pysbd sentence tokenizer
-    #  seg = pysbd.Segmenter(language="en", clean=False)
-    # tokens = seg.segment(target_data)
-    f.seek(0)
-    f.write(
-        "\n".join(tokens),
-    )
-    f.truncate()
+    custom_doc_sk = nlp_sk(target_text)
+    custom_doc_sk_sent = list(custom_doc_sk.sents)
+    ft.seek(0)
+    for sent in custom_doc_sk_sent:
+        ft.write("%s\n" % sent)
+    ft.truncate()
+    
+
+# english file
+file_source = sys.argv[2]
+with open(file_source, "r+") as fs:
+    source_text = fs.read()
+
+    nlp_en = spacy.load('en_core_web_sm')
+
+    custom_doc_en = nlp_en(source_text)
+    custom_doc_en_sent = list(custom_doc_en.sents)
+
+    fs.seek(0)
+    for sent in custom_doc_en_sent:
+        fs.write("%s\n" % sent)
+    fs.truncate()
